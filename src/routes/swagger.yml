@@ -1,0 +1,194 @@
+components:
+  securitySchemes:
+    JWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  responses:
+    BadRequestError:
+      description: Validation failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Message'
+          example:
+            message: Validation failed
+    UnauthorizedError:
+      description: Token is missing or invalid
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Message'
+          example:
+            message: Token is required
+    PaymentRequired:
+      description: Payment is required
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Message'
+          example:
+            message: Payment is required
+    ForbiddenError:
+      description: Access is not allowed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Message'
+          example:
+            message: You do not have access to this resource
+    NotFoundError:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Message'
+          example:
+            message: This resource does not exist
+    ConflictError:
+      description: Resource conflict
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Message'
+          example:
+            message: Resource already exist
+    PreconditionFailedError:
+      description: Precondition failed
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Message'
+          example:
+            message: Precondition failed
+    InternalError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Message'
+          example:
+            message: Unexpected error occurred
+    NoContentResponse:
+      description: No Content success status response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Message'
+          example:
+            message: Request has succeeded
+  parameters:
+    offset:
+      in: query
+      name: offset
+      description: The number of items to skip before starting to collect the result set
+      schema:
+        type: integer
+        minimum: 0
+        default: '0'
+    limit:
+      in: query
+      name: limit
+      description: The numbers of items to return
+      schema:
+        type: integer
+        minimum: 0
+        default: 10
+    query:
+      in: query
+      name: q
+      description: Query
+      schema:
+        type: string
+    userId:
+      in: path
+      name: userId
+      description: User ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    resetPasswordToken:
+      in: query
+      name: token
+      description: Reset Password Token
+      required: true
+      schema:
+      type: string
+    invitationToken:
+      in: query
+      name: token
+      description: User Invitation Token
+      required: true
+      schema:
+        type: string
+    clientInvitationAccepted:
+      in: query
+      name: accepted
+      description: Filter clients with accepted invitations only
+      required: false
+      schema:
+        type: boolean
+    clientInvitationPending:
+      in: query
+      name: pending
+      description: Filter clients with pending invitations only
+      required: false
+      schema:
+        type: boolean
+  schemas:
+    Message:
+      properties:
+        message:
+          type: string
+    Authenticate:
+      properties:
+        token:
+          type: string
+    UserInvitation:
+      required:
+        - id
+        - email
+        - role
+        - invitationAccepted
+      properties:
+        id:
+          description: User ID
+          type: string
+          format: uuid
+        email:
+          description: E-mail
+          type: string
+        role:
+          description: Role
+          type: string
+        invitationAccepted:
+          description: Invitation accepted?
+          type: string      
+    User:
+      required:
+        - id
+        - email
+        - firstName
+        - lastName
+        - role
+      properties:
+        id:
+          description: User ID
+          type: string
+          format: uuid
+        email:
+          description: E-mail
+          type: string
+        firstName:
+          description: First name
+          type: string
+        lastName:
+          description: Last name
+          type: string
+        role:
+          description: Role
+          type: string
+        invitationAccepted:
+          description: Invitation accepted?
+          type: string

@@ -1,0 +1,15 @@
+{{#user.invitationAccepted}}
+  Hello {{{user.firstName}}},
+{{/user.invitationAccepted}}
+{{^user.invitationAccepted}}
+  Hello {{{user.email}}},
+{{/user.invitationAccepted}}
+
+Congratulation! Your account request was approved.
+
+Please visit the following link to complete your account setup:
+
+{{{invitationURL}}}
+
+Thanks,
+{{{app.name}}}

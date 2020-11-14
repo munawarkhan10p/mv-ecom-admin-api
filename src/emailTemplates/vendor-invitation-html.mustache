@@ -1,0 +1,18 @@
+{{#user.invitationAccepted}}
+  Hello {{user.firstName}},<br /><br />
+{{/user.invitationAccepted}}
+{{^user.invitationAccepted}}
+  Hello {{user.email}},<br /><br />
+{{/user.invitationAccepted}}
+
+You've been invited by <b>{{invitee.firstName}} {{invitee.lastName}} ({{invitee.email}})</b> to join <b>{{client.name}}</b> User Group as {{user.role}} in {{app.name}}.<br /><br />
+
+Please click the following button to join:<br /><br />
+
+<a
+  href="{{invitationURL}}"
+  style="background-color: #4CAF50; border: none; color: white; padding: 12px 18px; text-align: center; text-transform: uppercase; text-decoration: none; display: inline-block; cursor: pointer; font-size: 16px; font-family: Arial; font-weight: bold;"
+>Join</a><br /><br />
+
+Thanks,<br />
+{{app.name}}

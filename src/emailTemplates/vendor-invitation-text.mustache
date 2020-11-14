@@ -1,0 +1,15 @@
+{{#user.invitationAccepted}}
+  Hello {{{user.firstName}}},
+{{/user.invitationAccepted}}
+{{^user.invitationAccepted}}
+  Hello {{{user.email}}},
+{{/user.invitationAccepted}}
+
+You've been invited by {{{invitee.firstName}}} {{{invitee.lastName}}} ({{{invitee.email}}}) to join {{{client.name}}} User Group as {{{user.role}}} in {{{app.name}}}.
+
+Please visit the following link to join:
+
+{{{invitationURL}}}
+
+Thanks,
+{{{app.name}}}

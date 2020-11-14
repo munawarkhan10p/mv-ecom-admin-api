@@ -1,0 +1,47 @@
+version: '3.0'
+
+services:
+    api:
+        build: .
+        environment:
+            NODE_ENV: development
+            DB_HOST: postgres
+            DB_PORT: 5432
+            DB_NAME: postgres
+            DB_USERNAME: postgres
+            DB_PASSWORD: postgres
+            SQS_TE_URL: https://sqs.us-east-1.amazonaws.com/962368660083/emails
+            AWS_DEFAULT_REGION: us-east-1
+            AWS_ACCESS_KEY_ID: 'AKIA6AENEMJZ52ZDCMOT'
+            AWS_SECRET_ACCESS_KEY: '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'
+            SMTP_HOST: smtp.ethereal.email
+            SMTP_USER: johathan.mcdermott@ethereal.email
+            SMTP_PASS: YBrr89DntXwqEzF5WM
+
+        ports:
+            - 3000:3000
+        volumes:
+            - ./src:/app/src
+        networks:
+            - default
+
+    docs:
+        image: swaggerapi/swagger-ui:latest
+        environment:
+            API_URL: http://localhost:3000/swagger.json
+        ports:
+            - 3001:8080
+
+    postgres:
+        image: postgres:latest
+        environment:
+            POSTGRES_PASSWORD: postgres
+        ports:
+            # debugging purposes only, you may change it if its conflicting
+            - 5432:5432
+        volumes:
+            - db-data:/var/lib/postgresql/data
+
+volumes:
+    db-data:
+

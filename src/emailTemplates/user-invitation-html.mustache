@@ -1,0 +1,13 @@
+Hello {{user.email}},<br /><br />
+
+You've been invited by <b>{{invitee.firstName}} {{invitee.lastName}} ({{invitee.email}})</b> to join {{app.name}}.<br /><br />
+
+Please click the following button to join:<br /><br />
+
+<a
+  href="{{invitationURL}}"
+  style="background-color: #4CAF50; border: none; color: white; padding: 12px 18px; text-align: center; text-transform: uppercase; text-decoration: none; display: inline-block; cursor: pointer; font-size: 16px; font-family: Arial; font-weight: bold;"
+>Join</a><br /><br />
+
+Thanks,<br />
+{{app.name}}
