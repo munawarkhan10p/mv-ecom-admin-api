@@ -192,3 +192,28 @@ components:
         invitationAccepted:
           description: Invitation accepted?
           type: string
+    Category:
+    required:
+      - id
+      - name
+      - type
+      - description
+      - commissionRate
+    properties:
+      id:
+        description: Category ID
+        type: string
+        format: uuid
+      name:
+        description: Category name
+        type: string
+      type:
+        description: Category type
+        type: string
+      description:
+        description: Category description
+        type: string
+      commissionRate:
+        description: Category commission rate
+        type: string
+      invitationAccepted:

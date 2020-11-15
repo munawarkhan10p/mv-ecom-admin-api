@@ -65,4 +65,9 @@ export enum ProductStatus {
     IN_STOCK = 'IN_STOCK',
     RUNNING_LOW = 'RUNNING_LOW'
 
-} 
+}
+
+export enum CategoryType {
+    PHYSICAL = 'PHYSICAL',
+    DIGITAL = 'DIGITAL'
+}
