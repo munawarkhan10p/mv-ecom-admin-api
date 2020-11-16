@@ -1,3 +1,8 @@
+export enum Status {
+    ACTIVE = 'ACTIVE',
+    DISABLED = 'DISABLED'
+}
+
 export enum AccountRequestStatus {
     UNDECIDED = 'UNDECIDED',
     APPROVED = 'APPROVED',

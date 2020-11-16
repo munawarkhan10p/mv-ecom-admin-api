@@ -115,7 +115,15 @@ components:
       required: true
       schema:
         type: string
-        format: uuid    
+        format: uuid
+    brandId:
+      in: path
+      name: branhId
+      description: Brand ID
+      required: true
+      schema:
+        type: string
+        format: uuid     
     resetPasswordToken:
       in: query
       name: token
