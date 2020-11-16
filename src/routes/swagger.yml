@@ -108,6 +108,14 @@ components:
       schema:
         type: string
         format: uuid
+    categoryId:
+      in: path
+      name: categoryId
+      description: Category ID
+      required: true
+      schema:
+        type: string
+        format: uuid    
     resetPasswordToken:
       in: query
       name: token

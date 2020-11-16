@@ -10,8 +10,8 @@ export async function getAllCategories(offset: number, limit: number): Promise<[
     return CategoryRepo.getAll(offset, limit);
 }
 
-export async function findCategory(vendorId: string): Promise<Category> {
-    const vendor = await CategoryRepo.find(vendorId);
+export async function findCategory(categoryId: string): Promise<Category> {
+    const vendor = await CategoryRepo.find(categoryId);
     if (!vendor) {
         throw Boom.notFound('Category with this id does not exist');
     }
@@ -26,6 +26,23 @@ export async function createCategory(name: string, type: CategoryType, descripti
     }
 
     return CategoryRepo.create(name, type, description, commissionRate);
+}
+
+export async function updateCategory(categoryId: string, name: string, type: CategoryType, description: string, commissionRate: number): Promise<Category> {
+    const category = await findCategory(categoryId);
+
+    const _category = await CategoryRepo.findByName(name);
+    if (_category && category.id !== _category.id) {
+        throw Boom.conflict('Category with this name already exist');
+    }
+
+    category.name = name;
+    category.type = type;
+    category.description = description;
+    category.commissionRate = commissionRate;
+    await CategoryRepo.update(category.id, category.name, category.type, category.description, category.commissionRate);
+
+    return category;
 }
 
 export async function deleteCategory(vendorId: string): Promise<void> {

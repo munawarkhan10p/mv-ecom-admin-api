@@ -1,7 +1,7 @@
 import Joi from '@hapi/joi';
 import express, { Router } from 'express';
 import { CategoryType, Role } from '../models/enums';
-import { createCategory, deleteCategory, getAllCategories } from '../services/category';
+import { createCategory, deleteCategory, getAllCategories, updateCategory } from '../services/category';
 
 import { authorize } from '../middlewares/authorize';
 import { wrapAsync } from '../utils/asyncHandler';
@@ -162,6 +162,87 @@ router.post('/categories', authorize(Role.ADMIN), wrapAsync(async (req: Request,
 /**
  * @swagger
  * /categories/{categoryId}:
+ *   put:
+ *     tags:
+ *       - Category
+ *     summary: Update a Category
+ *     security:
+ *       - JWT: []
+ *     parameters:
+ *       - $ref: '#/components/parameters/categoryId'
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 description: Vendor name
+ *                 type: string
+ *               type:
+ *                 description: Category type
+ *                 type: string
+ *                 enum: [PHYSICAL, DIGITAL]
+ *               description:
+ *                 description: Category description
+ *                 type: string
+ *               commissionRate:
+ *                 description: Category commmission rate
+ *                 type: number
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Category'
+ *             example:
+ *               id: 2efa52e2-e9fd-4bd0-88bc-0132b2e837d9
+ *               name: Category 1
+ *               type: PHYSICAL
+ *               description: This is apparel category
+ *               commissionRate: 5
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ *       409:
+ *         $ref: '#/components/responses/ConflictError'
+ *       500:
+ *         $ref: '#/components/responses/InternalError'
+ */
+router.put('/categories/:categoryId', authorize(Role.ADMIN), wrapAsync(async (req: Request, res: express.Response) => {
+    const { categoryId, name, type, description, commissionRate } = await Joi
+        .object({
+            categoryId: Joi.string().trim().uuid().required().label('Category ID'),
+            name: Joi.string().trim().min(3).max(50).required().label('Name'),
+            type: Joi.string().valid(CategoryType.PHYSICAL, CategoryType.DIGITAL).required().label('Type'),
+            description: Joi.string().trim().min(3).max(500).required().label('Description'),
+            commissionRate: Joi.number().integer().min(1).required().label('Commission Rate'),
+        })
+        .validateAsync({
+            ...req.body,
+            categoryId: req.params.categoryId,
+        });
+
+    const category = await updateCategory(categoryId, name, type, description, commissionRate);
+
+    res.send({
+        id: category.id,
+        name: category.name,
+        type: category.type,
+        description: category.description,
+        commissionRate: category.commissionRate
+
+    });
+}));
+
+/**
+ * @swagger
+ * /categories/{categoryId}:
  *   delete:
  *     tags:
  *       - Category
@@ -182,13 +263,13 @@ router.post('/categories', authorize(Role.ADMIN), wrapAsync(async (req: Request,
  *       500:
  *         $ref: '#/components/responses/InternalError'
  */
-router.delete('/vendors/:vendorId', authorize(Role.ADMIN), wrapAsync(async (req: Request, res: express.Response) => {
+router.delete('/categories/:categoryId', authorize(Role.ADMIN), wrapAsync(async (req: Request, res: express.Response) => {
     const { categoryId } = await Joi
         .object({
             categoryId: Joi.string().trim().uuid().required().label('Category ID'),
         })
         .validateAsync({
-            vendorId: req.params.vendorId,
+            categoryId: req.params.categoryId,
         });
 
     await deleteCategory(categoryId);

@@ -39,6 +39,10 @@ async create(name: string, type: CategoryType, description: string, commissionRa
     return this.repo.save(category);
 }
 
+async update(categoryId: string, name: string, type: CategoryType, description: string, commissionRate: number): Promise<Category> {
+    return this.repo.save({ id: categoryId, name, type, description, commissionRate });
+}
+
 async remove(categoryId: string): Promise<void> {
     await this.repo.delete(categoryId);
 }
