@@ -152,6 +152,13 @@ components:
       required: false
       schema:
         type: boolean
+    logo:
+      in: formData
+      name: Logo
+      description: Upload logo file
+      required: true
+      schema:
+        type: file    
   schemas:
     Message:
       properties:
@@ -232,4 +239,4 @@ components:
       commissionRate:
         description: Category commission rate
         type: string
-      invitationAccepted:
+      

@@ -90,6 +90,10 @@ router.get('/brands', authorize(), wrapAsync(async (req: Request, res: express.R
  *     tags:
  *       - Brand
  *     summary: Create a brand
+ *     consumes:
+ *       - multipart/form-data
+ *     parameters:
+ *       - $ref: '#/components/parameters/logo' 
  *     security:
  *       - JWT: []
  *     requestBody:
@@ -101,9 +105,6 @@ router.get('/brands', authorize(), wrapAsync(async (req: Request, res: express.R
  *             properties:
  *               name:
  *                 description: Brand name
- *                 type: string
- *               logo:
- *                 description: Brand logo path
  *                 type: string
  *               status:
  *                 description: Brand status
@@ -134,10 +135,16 @@ router.post('/brands', authorize(Role.ADMIN), wrapAsync(async (req: Request, res
     const { name, logo, status } = await Joi
         .object({
             name: Joi.string().trim().min(3).max(50).required().label('Name'),
-            logo: Joi.string().trim().min(3).max(500).required().label('Logo'),
+            logo: Joi.any().label('Logo'),
             status: Joi.string().valid(Status.ACTIVE, Status.DISABLED).required().label('Status'),
         })
-        .validateAsync(req.body);
+        .validateAsync({
+            ...req.body,
+            // logo: req.params.logo
+        });
+
+        //console.log('req',req);
+        console.log('logo',logo);
 
     const brand = await createBrand(name, logo, status);
 
