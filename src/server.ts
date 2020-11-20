@@ -7,7 +7,7 @@ import bunyanMiddleware from 'express-bunyan-logger';
 import fg from 'fast-glob';
 import helmet from 'helmet';
 import { createConnection } from 'typeorm';
-
+// import multer from 'multer';
 import config from './config';
 import ErrorHandler from './middlewares/errorHandler';
 import logger from './utils/logger';
@@ -30,13 +30,16 @@ async function start(): Promise<void> {
 
     // Register middlewares
     const appUrl = new URL(config.app.url);
-
     app.use(cors({
         origin: config.env === 'production' ? appUrl.origin : '*',
     }));
     app.use(helmet());
 
     app.use(bodyParser.json());
+    // app.use(multer().any());
+    // app.use(bodyParser.urlencoded({extended: true}));
+    // // app.use(upload.single('logo'));
+    // // app.use(express.static('public'));
     app.use(bunyanMiddleware({
         logger,
         parseUA: false,

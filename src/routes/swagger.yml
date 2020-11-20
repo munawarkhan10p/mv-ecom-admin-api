@@ -118,7 +118,7 @@ components:
         format: uuid
     brandId:
       in: path
-      name: branhId
+      name: brandId
       description: Brand ID
       required: true
       schema:
@@ -154,9 +154,9 @@ components:
         type: boolean
     logo:
       in: formData
-      name: Logo
+      name: logo
       description: Upload logo file
-      required: true
+      required: false
       schema:
         type: file    
   schemas:
@@ -239,4 +239,3 @@ components:
       commissionRate:
         description: Category commission rate
         type: string
-      

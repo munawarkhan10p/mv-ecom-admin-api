@@ -11,7 +11,7 @@ export class Brand {
     name!: string;
 
     @Column()
-    logo: string;
+    logoPath: string;
 
     @Column('enum', { enum: Status})
     status: Status

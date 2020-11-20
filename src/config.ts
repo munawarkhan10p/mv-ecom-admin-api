@@ -142,14 +142,9 @@ const conf = convict({
         },
     },
     s3: {
-        postScreenshotBucket: {
+        Images: {
             format: '*',
-            default: 'post-screenshot-bucket',
-            env: 'S3_PSB_NAME',
-        },
-        reportDocumentBucket: {
-            format: '*',
-            default: 'report-document-bucket',
+            default: 'fileupload-11',
             env: 'S3_RDB_NAME',
         },
     },

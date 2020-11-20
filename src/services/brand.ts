@@ -37,9 +37,9 @@ export async function updateBrand(brandId: string, name: string, logo: string, s
     }
 
     brand.name = name;
-    brand.logo = logo;
+    brand.logoPath = logo;
     brand.status = status;
-    await BrandRepo.update(brand.id, brand.name, brand.logo, brand.status);
+    await BrandRepo.update(brand.id, brand.name, brand.logoPath, brand.status);
 
     return brand;
 }

@@ -7,6 +7,13 @@ import { wrapAsync } from '../utils/asyncHandler';
 
 import { Request, isUserReq } from './interfaces';
 import { createBrand, deleteBrand, getAllBrands, updateBrand } from '../services/brand';
+import multer from 'multer';
+import fs from 'fs';
+
+import { S3 } from '../utils/aws';
+import config from '../config';
+
+const upload = multer({ dest: '/tmp/' })
 
 const router = Router();
 
@@ -42,11 +49,11 @@ const router = Router();
  *               data:
  *                 - id: c43a3b0d-e794-4a9c-9c12-e35c6b62de4c
  *                   name: Brand 1
- *                   logo: path to logo
+ *                   logoPath: path to logo
  *                   status: ACTIVE
  *                 - id: 2efa52e2-e9fd-4bd0-88bc-0132b2e837d9
  *                   name: Brand 2
- *                   logo: path to logo
+ *                   logoPath: path to logo
  *                   status: ACTIVE
  *       401:
  *         $ref: '#/components/responses/UnauthorizedError'
@@ -77,7 +84,7 @@ router.get('/brands', authorize(), wrapAsync(async (req: Request, res: express.R
             data: brands.map((brand) => ({
                 id: brand.id,
                 name: brand.name,
-                logo: brand.logo,
+                logo: brand.logoPath,
                 status: brand.status,
             })),
         });
@@ -92,14 +99,12 @@ router.get('/brands', authorize(), wrapAsync(async (req: Request, res: express.R
  *     summary: Create a brand
  *     consumes:
  *       - multipart/form-data
- *     parameters:
- *       - $ref: '#/components/parameters/logo' 
  *     security:
  *       - JWT: []
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
@@ -109,9 +114,12 @@ router.get('/brands', authorize(), wrapAsync(async (req: Request, res: express.R
  *               status:
  *                 description: Brand status
  *                 type: string
- *                 enum: [PHYSICAL, DIGITAL]
+ *                 enum: [ACTIVE, DISABLED]
+ *               brandImage:
+ *                 type: string
+ *                 format: binary 
  *     produces:
- *       - application/json
+ *       - multipart/form-data
  *     responses:
  *       200:
  *         description: OK
@@ -122,7 +130,7 @@ router.get('/brands', authorize(), wrapAsync(async (req: Request, res: express.R
  *             example:
  *               id: 2efa52e2-e9fd-4bd0-88bc-0132b2e837d9
  *               name: Brand 1
- *               logo: Path to log
+ *               logoPath: Path to  brand image
  *               status: ACTIVE
  *       401:
  *         $ref: '#/components/responses/UnauthorizedError'
@@ -131,27 +139,32 @@ router.get('/brands', authorize(), wrapAsync(async (req: Request, res: express.R
  *       500:
  *         $ref: '#/components/responses/InternalError'
  */
-router.post('/brands', authorize(Role.ADMIN), wrapAsync(async (req: Request, res: express.Response) => {
-    const { name, logo, status } = await Joi
+router.post('/brands', authorize(Role.ADMIN), upload.single('brandImage'), wrapAsync(async (req: Request, res: express.Response) => {
+    const { name, status } = await Joi
         .object({
             name: Joi.string().trim().min(3).max(50).required().label('Name'),
-            logo: Joi.any().label('Logo'),
             status: Joi.string().valid(Status.ACTIVE, Status.DISABLED).required().label('Status'),
+            // logo: Joi.any().label('Logo'),
         })
-        .validateAsync({
-            ...req.body,
-            // logo: req.params.logo
-        });
+        .validateAsync(req.body);
 
-        //console.log('req',req);
-        console.log('logo',logo);
+    const stream = fs.createReadStream(req.file.path);
+    
+    await S3.putObject({
+        Bucket: config.s3.Images,
+        Key: req.file.originalname,
+        Body: stream,
+        ContentType: req.file.mimetype,
+    }).promise();
 
-    const brand = await createBrand(name, logo, status);
+    const url = `https://${config.s3.Images}.s3.amazonaws.com/${req.file.originalname}`;
+        
+    const brand = await createBrand(name, url, status);
 
     res.send({
         id: brand.id,
         name: brand.name,
-        logo: brand.logo,
+        logo: brand.logoPath,
         status: brand.status,
     });
 }));
@@ -170,16 +183,17 @@ router.post('/brands', authorize(Role.ADMIN), wrapAsync(async (req: Request, res
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
  *               name:
  *                 description: Brand name
  *                 type: string
- *               logo:
- *                 description: Brand logo path
+ *               brandImage:
+ *                 description: Brand logo 
  *                 type: string
+ *                 format: binary
  *               status:
  *                 description: Brand status
  *                 type: string
@@ -207,25 +221,36 @@ router.post('/brands', authorize(Role.ADMIN), wrapAsync(async (req: Request, res
  *       500:
  *         $ref: '#/components/responses/InternalError'
  */
-router.put('/brands/:brandId', authorize(Role.ADMIN), wrapAsync(async (req: Request, res: express.Response) => {
-    const { brandId, name, logo, status } = await Joi
+router.put('/brands/:brandId', authorize(Role.ADMIN), upload.single('brandImage'), wrapAsync(async (req: Request, res: express.Response) => {
+    const { brandId, name, status } = await Joi
         .object({
             brandId: Joi.string().trim().uuid().required().label('Brand ID'),
             name: Joi.string().trim().min(3).max(50).required().label('Name'),
-            logo: Joi.string().trim().min(3).max(500).required().label('Logo'),
             status: Joi.string().valid(Status.ACTIVE, Status.DISABLED).required().label('Status'),
+            // logo: Joi.string().trim().min(3).max(500).required().label('Logo'),
         })
         .validateAsync({
             ...req.body,
-            categoryId: req.params.categoryId,
+            brandId: req.params.brandId,
         });
 
-    const brand = await updateBrand(brandId, name, logo, status);
+        const stream = fs.createReadStream(req.file.path);
+    
+        await S3.putObject({
+            Bucket: config.s3.Images,
+            Key: req.file.originalname,
+            Body: stream,
+            ContentType: req.file.mimetype,
+        }).promise();
+    
+        const url = `https://${config.s3.Images}.s3.amazonaws.com/${req.file.originalname}`;
+
+    const brand = await updateBrand(brandId, name, url, status);
 
     res.send({
         id: brand.id,
         name: brand.name,
-        logo: brand.logo,
+        logo: brand.logoPath,
         status: brand.status,
     });
 }));

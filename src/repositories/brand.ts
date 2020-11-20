@@ -33,10 +33,10 @@ async findByName(name: string): Promise<Brand | undefined> {
     });
 }
 
-async create(name: string, logo: string, status: Status): Promise<Brand> {
-    const category = this.repo.create({ name, logo, status });
+async create(name: string, logoPath: string, status: Status): Promise<Brand> {
+    const brand = this.repo.create({ name, logoPath, status });
 
-    return this.repo.save(category);
+    return this.repo.save(brand);
 }
 
 async update(brandId: string,name: string, logo: string, status: Status): Promise<Brand> {
