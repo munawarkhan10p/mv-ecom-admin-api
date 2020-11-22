@@ -3,6 +3,7 @@ import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, Up
 import { VendorSettings } from './VendorSettings';
 import { VendorUser } from './VendorUser';
 import { VendorType, VendorState } from './enums';
+import { Product } from './Product';
 
 @Entity()
 export class Vendor {
@@ -26,6 +27,9 @@ export class Vendor {
 
     @OneToOne(() => VendorSettings, settings => settings.vendor)
     settings!: VendorSettings;
+
+    @OneToMany(() => Product, product => product.vendor)
+    product!: Product;
 
     @CreateDateColumn()
     createdAt!: Date;

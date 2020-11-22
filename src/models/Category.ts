@@ -1,5 +1,6 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { CategoryType } from "./enums";
+import { Product } from "./Product";
 
 @Entity()
 export class Category {
@@ -17,6 +18,9 @@ export class Category {
 
     @Column()
     commissionRate: number;
+
+    @OneToMany(() => Product, product => product.category)
+    product!: Product[];
 
     @CreateDateColumn()
     createdAt!: Date;

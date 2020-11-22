@@ -692,7 +692,7 @@ router.get('/clients/:clientId/users', authorize([Role.ADMIN, Role.VENDOR], Vend
             firstName: user.firstName,
             lastName: user.lastName,
             role: user.role,
-            clientRole: user.vendorUsers[0].role,
+            vendorRole: user.vendorUsers[0].role,
             invitationAccepted: user.vendorUsers[0].invitationAccepted,
         })),
     });
@@ -772,7 +772,7 @@ router.post('/clients/:clientId/users', authorize([Role.ADMIN, Role.VENDOR], Ven
     let user: User | null = null;
 
     try {
-        user = await createUser(email, Role.VENDOR);
+        user = await createUser(email, Role.ADMIN);
     } catch (err) { // usually throws when user already exists
         user = await findUserByEmail(email);
 

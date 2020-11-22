@@ -1,3 +1,4 @@
+import { ProductStatus } from 'src/models/enums';
 import { Repository, getConnection } from 'typeorm';
 
 import { Product } from '../models/Product';
@@ -32,11 +33,11 @@ async findByName(name: string): Promise<Product | undefined> {
     });
 }
 
-// async create(name: string, type: CategoryType, description: string, commissionRate: number): Promise<Category> {
-//     const category = this.repo.create({ name, type, description, commissionRate });
-
-//     return this.repo.save(category);
-// }
+async create(name: string, price: number, status: ProductStatus, imagesPath: string[], categoryId: string, vendorId: string): Promise<Product> {
+    const product = this.repo.create({ name, price, status, imagesPath, categoryId, vendorId});
+    
+    return this.repo.save(product);
+}
 
 // async update(productId: string, name: string, type: CategoryType, description: string, commissionRate: number): Promise<Category> {
 //     return this.repo.save({ id: productId, name, type, description, commissionRate });

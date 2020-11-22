@@ -115,7 +115,7 @@ router.get('/vendors', authorize(), wrapAsync(async (req: Request, res: express.
                 name: vendor.name,
                 type: vendor.type,
                 state: vendor.state,
-                clientRole: vendor.vendorUsers[0].role,
+                vendorRole: vendor.vendorUsers[0].role,
                 invitationAccepted: vendor.vendorUsers[0].invitationAccepted,
                 settings: {
                     userLimit: vendor.settings.userLimit,
