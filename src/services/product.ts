@@ -28,21 +28,25 @@ export async function createProduct(name: string, price: number, status: Product
     return ProductRepo.create(name, price, status, imagesPath, categoryId, vendorId);
 }
 
-// export async function updateBrand(brandId: string, name: string, logo: string, status: Status): Promise<Brand> {
-//     const brand = await findBrand(brandId);
+export async function updateProduct(productId: string, name: string, price: number, status: ProductStatus, imagesPath: string[], categoryId: string, vendorId: string): Promise<Product> {
+    const product = await findProduct(productId);
 
-//     const _brand = await BrandRepo.findByName(name);
-//     if (_brand && brand.id !== _brand.id) {
-//         throw Boom.conflict('Brand with this name already exist');
-//     }
+    const _product = await ProductRepo.findByName(name);
+    if (_product && product.id !== _product.id) {
+        throw Boom.conflict('Product with this name already exist');
+    }
 
-//     brand.name = name;
-//     brand.logoPath = logo;
-//     brand.status = status;
-//     await BrandRepo.update(brand.id, brand.name, brand.logoPath, brand.status);
+    product.name = name;
+    product.price = price;
+    product.status = status;
+    product.imagesPath = imagesPath;
+    product.categoryId = categoryId;
+    product.vendorId = vendorId;
 
-//     return brand;
-// }
+    await ProductRepo.update(product.id, name, price, status, imagesPath, categoryId, vendorId);
+
+    return product;
+}
 
 export async function deleteProduct(productId: string): Promise<void> {
     const product = await findProduct(productId);

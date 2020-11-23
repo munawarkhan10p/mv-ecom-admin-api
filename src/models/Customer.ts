@@ -1,37 +1,30 @@
 import moment from 'moment';
-import { BeforeInsert, BeforeUpdate, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { BaseModel } from './BaseModel';
 
 @Entity()
-export class Customer extends BaseModel {
+export class Customer {
     @PrimaryGeneratedColumn('uuid')
     id!: string;
 
     @Column({ nullable: true })
-    firstName?: string;
+    firstName: string;
 
     @Column({ nullable: true })
-    lastName?: string;
-
-    @Column({name: 'username'})
-    username: string;
+    lastName: string;
 
     @Column({ nullable: true })
-    hashedPassword?: string;
+    hashedPassword: string;
 
     @Column({ unique: true })
-    email!: string;
+    email: string;
 
-    @Column({name: 'is_active'})
-    isActive: number;
+    @Column()
+    isActive: boolean;
 
-    @BeforeInsert()
-    public async createDetails(): Promise<void> {
-        this.createdDate = moment().format('YYYY-MM-DD HH:mm:ss');
-    }
+    @CreateDateColumn()
+    createdAt!: Date;
 
-    @BeforeUpdate()
-    public async updateDetails(): Promise<void> {
-        this.modifiedDate = moment().format('YYYY-MM-DD HH:mm:ss');
-    }
+    @UpdateDateColumn()
+    updatedAt!: Date;
 }

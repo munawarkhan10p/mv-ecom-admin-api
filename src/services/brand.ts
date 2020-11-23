@@ -1,7 +1,7 @@
 
 import Boom from '@hapi/boom';
 import { Brand } from '../models/Brand';
-import { CategoryType, Status } from '../models/enums';
+import { Status } from '../models/enums';
 import BrandRepo from '../repositories/brand';
 
 

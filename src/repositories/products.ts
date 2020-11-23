@@ -39,9 +39,9 @@ async create(name: string, price: number, status: ProductStatus, imagesPath: str
     return this.repo.save(product);
 }
 
-// async update(productId: string, name: string, type: CategoryType, description: string, commissionRate: number): Promise<Category> {
-//     return this.repo.save({ id: productId, name, type, description, commissionRate });
-// }
+async update(productId: string, name: string, price: number, status: ProductStatus, imagesPath: string[], categoryId: string, vendorId: string): Promise<Product> {
+    return this.repo.save({ id: productId, name, price, status, imagesPath, categoryId, vendorId });
+}
 
 async remove(productId: string): Promise<void> {
     await this.repo.delete(productId);

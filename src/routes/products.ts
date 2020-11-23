@@ -12,7 +12,7 @@ import fs from 'fs';
 
 import { S3 } from '../utils/aws';
 import config from '../config';
-import { createProduct, getAllProducts } from '../services/product';
+import { createProduct, deleteProduct, getAllProducts, updateProduct } from '../services/product';
 
 const upload = multer({ dest: '/tmp/' })
 
@@ -137,12 +137,15 @@ router.get('/products', authorize(), wrapAsync(async (req: Request, res: express
  *         content:
  *           application/json:
  *             schema:
- *               $ref: '#/components/schemas/Brand'
+ *               $ref: '#/components/schemas/Product'
  *             example:
  *               id: 2efa52e2-e9fd-4bd0-88bc-0132b2e837d9
- *               name: Brand 1
- *               logoPath: Path to  brand image
- *               status: ACTIVE
+ *               name: Product 1
+ *               price: 25
+ *               status: IN_STOCK   
+ *               imagesPath: ['https://${config.s3.Images}.s3.amazonaws.com/${req.file.originalname}']
+ *               categoryId: 2efa52e2-e9fd-4bd0-88bc-0132b2e837d9
+ *               vendorId: 4efa52e5-e6fd-4bd0-68bc-0132b2e83ww49
  *       401:
  *         $ref: '#/components/responses/UnauthorizedError'
  *       409:
@@ -174,5 +177,135 @@ router.post('/products', authorize([Role.ADMIN, Role.VENDOR]), upload.array('ima
         vendorId: product.vendorId
     });
 }));
+
+/**
+ * @swagger
+ * /products/{productId}:
+ *   put:
+ *     tags:
+ *       - Product
+ *     summary: Update a Product
+ *     security:
+ *       - JWT: []
+ *     parameters:
+ *       - $ref: '#/components/parameters/productId'
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 description: Product name
+ *                 type: string
+ *               price:
+ *                 description: Product price
+ *                 type: string
+ *               status:
+ *                 description: Product status
+ *                 type: string
+ *                 enum: [OUT_OF_STOCK, IN_STOCK, RUNNING_LOW]
+ *               imagesPath:
+ *                 description: Product logo 
+ *                 type: array
+ *                 items:
+ *                   type: string 
+ *                   format: binary     
+ *               categoryId:
+ *                 type: string
+ *               vendorId:
+ *                 type: string
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: OK
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Product'
+ *             example:
+ *               id: 2efa52e2-e9fd-4bd0-88bc-0132b2e837d9
+ *               name: Product 1
+ *               price: 25
+ *               status: IN_STOCK   
+ *               imagesPath: ['https://${config.s3.Images}.s3.amazonaws.com/${req.file.originalname}']
+ *               categoryId: 2efa52e2-e9fd-4bd0-88bc-0132b2e837d9
+ *               vendorId: 4efa52e5-e6fd-4bd0-68bc-0132b2e83ww49
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ *       409:
+ *         $ref: '#/components/responses/ConflictError'
+ *       500:
+ *         $ref: '#/components/responses/InternalError'
+ */
+router.put('/products/:productId', authorize(Role.ADMIN), upload.array('brandImage'), wrapAsync(async (req: Request, res: express.Response) => {
+    const { productId, name, price, status, categoryId, vendorId } = await Joi
+        .object({
+            productId: Joi.string().trim().uuid().required().label('Product ID'),
+            name: Joi.string().trim().min(3).max(50).required().label('Name'),
+            price: Joi.number().min(1).max(10000).required().label('Price'),
+            status: Joi.string().valid(ProductStatus.IN_STOCK, ProductStatus.OUT_OF_STOCK, ProductStatus.RUNNING_LOW).required().label('Status'),
+            categoryId: Joi.string().trim().uuid().required().label('Category ID'),
+            vendorId: Joi.string().trim().uuid().required().label('Vendor ID'),
+            
+        })
+        .validateAsync({
+            ...req.body,
+            productId: req.params.productId,
+        });
+        
+    const product = await updateProduct(productId, name, price, status, [''], categoryId, vendorId);
+
+    res.send({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        status: product.status,
+        categoryId: product.categoryId,
+        vendorId: product.vendorId
+    });
+}));
+
+/**
+ * @swagger
+ * /products/{productId}:
+ *   delete:
+ *     tags:
+ *       - Product
+ *     summary: Delete a Product
+ *     security:
+ *       - JWT: []
+ *     parameters:
+ *       - $ref: '#/components/parameters/productId'
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       204:
+ *         $ref: '#/components/responses/NoContentResponse'
+ *       401:
+ *         $ref: '#/components/responses/UnauthorizedError'
+ *       404:
+ *         $ref: '#/components/responses/NotFoundError'
+ *       500:
+ *         $ref: '#/components/responses/InternalError'
+ */
+router.delete('/products/:productId', authorize(Role.ADMIN), wrapAsync(async (req: Request, res: express.Response) => {
+    const { productId } = await Joi
+        .object({
+            productId: Joi.string().trim().uuid().required().label('Brand ID'),
+        })
+        .validateAsync({
+            productId: req.params.productId,
+        });
+
+    await deleteProduct(productId);
+
+    res.send(204);
+}));
+
 
 export default router;

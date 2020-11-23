@@ -123,6 +123,22 @@ components:
       required: true
       schema:
         type: string
+        format: uuid
+    customerId:
+      in: path
+      name: customerId
+      description: Customer ID
+      required: true
+      schema:
+        type: string
+        format: uuid
+    productId:
+      in: path
+      name: productId
+      description: Product ID
+      required: true
+      schema:
+        type: string
         format: uuid     
     resetPasswordToken:
       in: query

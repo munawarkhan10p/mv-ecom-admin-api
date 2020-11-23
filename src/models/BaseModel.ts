@@ -1,10 +1,10 @@
 import {Column} from 'typeorm';
 import { Exclude } from 'class-transformer';
 export abstract class BaseModel {
-    @Column({ name: 'created_date' })
+    @Column()
     public createdDate: string;
 
     @Exclude()
-    @Column({ name: 'modified_date' })
+    @Column()
     public modifiedDate: string;
 }
