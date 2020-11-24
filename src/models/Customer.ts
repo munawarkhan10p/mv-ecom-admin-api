@@ -1,6 +1,7 @@
 import moment from 'moment';
-import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { BaseModel } from './BaseModel';
+import { Order } from './Orders';
 
 @Entity()
 export class Customer {
@@ -21,6 +22,9 @@ export class Customer {
 
     @Column()
     isActive: boolean;
+
+    @OneToMany( () => Order, order => order.customer)
+    order: Order;
 
     @CreateDateColumn()
     createdAt!: Date;

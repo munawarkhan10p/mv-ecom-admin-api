@@ -2,6 +2,8 @@ import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, OneToOne, Prima
 import { Category } from './Category';
 
 import { ProductStatus, Role } from './enums';
+import { OrderProduct } from './OrderProduct';
+import { Order } from './Orders';
 import { Vendor } from './Vendor';
 
 @Entity()
@@ -36,6 +38,12 @@ export class Product {
 
     @ManyToOne(() => Vendor, vendor => vendor.product)
     vendor: Vendor;
+
+    @ManyToOne(() => Order, order => order.product)
+    order: Order;
+
+    @OneToMany(type => OrderProduct, orderProduct => orderProduct.product)
+    orderProduct: OrderProduct;
 
     @CreateDateColumn()
     createdAt: Date;

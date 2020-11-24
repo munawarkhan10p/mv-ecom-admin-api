@@ -1,5 +1,8 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Customer } from "./Customer";
 import { OrderStatus } from "./enums";
+import { OrderProduct } from "./OrderProduct";
+import { Product } from "./Product";
 
 
 
@@ -9,10 +12,28 @@ export class Order {
     id!: string;
 
     @Column()
-    customerId: string;
+    orderCode: string;
+
+    @Column()
+    amount: number;
 
     @Column('enum', { enum: OrderStatus })
     status: OrderStatus
+
+    @Column()
+    customerId: string;
+
+    @Column()
+    productId: string;
+
+    @ManyToOne( () => Customer, customer => customer.order)
+    customer: Customer;
+
+    @OneToMany( () => Product, product => product.order)
+    product: Product[];
+
+    @OneToMany(type => OrderProduct, orderProduct => orderProduct.order)
+    orderProduct: OrderProduct;
 
     @CreateDateColumn()
     createdAt!: Date;
