@@ -43,7 +43,7 @@ export class Product {
     order: Order;
 
     @OneToMany(type => OrderProduct, orderProduct => orderProduct.product)
-    orderProduct: OrderProduct;
+    orderProduct: OrderProduct[];
 
     @CreateDateColumn()
     createdAt: Date;
