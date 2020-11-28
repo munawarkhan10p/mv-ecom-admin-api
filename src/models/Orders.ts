@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Customer } from "./Customer";
 import { OrderStatus } from "./enums";
 import { OrderProduct } from "./OrderProduct";
@@ -32,7 +32,7 @@ export class Order {
     @OneToMany( () => Product, product => product.order)
     product: Product[];
 
-    @OneToMany(type => OrderProduct, orderProduct => orderProduct.order)
+    @OneToOne(type => OrderProduct, orderProduct => orderProduct.order)
     orderProduct: OrderProduct;
 
     @CreateDateColumn()

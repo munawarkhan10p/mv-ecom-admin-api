@@ -29,7 +29,7 @@ export class Vendor {
     settings!: VendorSettings;
 
     @OneToMany(() => Product, product => product.vendor)
-    product!: Product;
+    product!: Product[];
 
     @CreateDateColumn()
     createdAt!: Date;

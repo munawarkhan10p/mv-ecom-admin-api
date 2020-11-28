@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn} from 'typeorm';
+import { Column, Entity, CreateDateColumn, UpdateDateColumn, OneToOne, OneToMany} from 'typeorm';
 import {PrimaryGeneratedColumn} from 'typeorm/index';
 import {Order} from './Orders';
 import {Product} from './Product';
@@ -24,10 +24,10 @@ export class OrderProduct {
     @Column()
     total: number;
 
-    @ManyToOne(type => Product, product => product.orderProduct)
+    @OneToMany(type => Product, product => product.orderProduct)
     product: Product[];
 
-    @ManyToOne(type => Order, order => order.orderProduct)
+    @OneToOne(type => Order, order => order.orderProduct)
     order: Order;
 
     @CreateDateColumn()

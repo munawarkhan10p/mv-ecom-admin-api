@@ -173,8 +173,8 @@ router.post('/products', authorize([Role.ADMIN, Role.VENDOR]), upload.array('ima
         name: product.name,
         price: product.price,
         status: product.status,
-        categoryId: product.categoryId,
-        vendorId: product.vendorId
+        categoryId: product.category.id,
+        vendorId: product.vendor.id
     });
 }));
 
@@ -265,8 +265,8 @@ router.put('/products/:productId', authorize(Role.ADMIN), upload.array('brandIma
         name: product.name,
         price: product.price,
         status: product.status,
-        categoryId: product.categoryId,
-        vendorId: product.vendorId
+        categoryId: product.category.id,
+        vendorId: product.vendor.id
     });
 }));
 

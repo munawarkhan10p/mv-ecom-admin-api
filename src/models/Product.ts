@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { Category } from './Category';
 
 import { ProductStatus, Role } from './enums';
@@ -27,16 +27,12 @@ export class Product {
     })
     imagesPath: string[];
 
-    @Column()
-    categoryId: string;
-
-    @Column()
-    vendorId: string;
-
     @ManyToOne(() => Category, category => category.product)
+    @JoinColumn()
     category: Category;
 
     @ManyToOne(() => Vendor, vendor => vendor.product)
+    @JoinColumn()
     vendor: Vendor;
 
     @ManyToOne(() => Order, order => order.product)
