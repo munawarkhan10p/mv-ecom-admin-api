@@ -84,7 +84,11 @@ router.get('/brands', authorize(), wrapAsync(async (req: Request, res: express.R
             data: brands.map((brand) => ({
                 id: brand.id,
                 name: brand.name,
-                logo: brand.logoPath,
+                logo:  S3.getSignedUrl('getObject', {
+                    Bucket: config.s3.Images,
+                    Key: brand.logoPath,
+                    Expires: 5 * 60,
+                }),
                 status: brand.status,
             })),
         });
@@ -157,9 +161,9 @@ router.post('/brands', authorize(Role.ADMIN), upload.single('brandImage'), wrapA
         ContentType: req.file.mimetype,
     }).promise();
 
-    const url = `https://${config.s3.Images}.s3.amazonaws.com/${req.file.originalname}`;
+    // const url = `https://${config.s3.Images}.s3.amazonaws.com/${req.file.originalname}`;
         
-    const brand = await createBrand(name, url, status);
+    const brand = await createBrand(name, req.file.originalname, status);
 
     res.send({
         id: brand.id,

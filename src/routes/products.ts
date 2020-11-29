@@ -173,8 +173,8 @@ router.post('/products', authorize([Role.ADMIN, Role.VENDOR]), upload.array('ima
         name: product.name,
         price: product.price,
         status: product.status,
-        categoryId: product.category.id,
-        vendorId: product.vendor.id
+        categoryId: product.categoryId,
+        vendorId: product.vendorId
     });
 }));
 

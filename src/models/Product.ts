@@ -27,12 +27,17 @@ export class Product {
     })
     imagesPath: string[];
 
+    @Column()
+    categoryId: string;
+
+    @Column()
+    vendorId: string;
+
     @ManyToOne(() => Category, category => category.product)
-    @JoinColumn()
     category: Category;
+    categoryCount: number;
 
     @ManyToOne(() => Vendor, vendor => vendor.product)
-    @JoinColumn()
     vendor: Vendor;
 
     @ManyToOne(() => Order, order => order.product)
