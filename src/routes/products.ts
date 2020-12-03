@@ -155,6 +155,11 @@ router.get('/products', authorize(), wrapAsync(async (req: Request, res: express
  */
 router.post('/products', authorize([Role.ADMIN, Role.VENDOR]), upload.array('imagesPath'), wrapAsync(async (req: Request, res: express.Response) => {
 
+
+    Array(req.files).forEach( file => {
+        console.log('files are',file);
+    })
+    
     const { name, price, status, categoryId, vendorId } = await Joi
         .object({
             name: Joi.string().trim().min(3).max(50).required().label('Name'),
@@ -243,6 +248,8 @@ router.post('/products', authorize([Role.ADMIN, Role.VENDOR]), upload.array('ima
  *         $ref: '#/components/responses/InternalError'
  */
 router.put('/products/:productId', authorize(Role.ADMIN), upload.array('brandImage'), wrapAsync(async (req: Request, res: express.Response) => {
+    
+    
     const { productId, name, price, status, categoryId, vendorId } = await Joi
         .object({
             productId: Joi.string().trim().uuid().required().label('Product ID'),
