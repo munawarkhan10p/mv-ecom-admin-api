@@ -8,10 +8,6 @@ import { wrapAsync } from '../utils/asyncHandler';
 import { Request, isUserReq } from './interfaces';
 import { createBrand, deleteBrand, getAllBrands, updateBrand } from '../services/brand';
 import multer from 'multer';
-import fs from 'fs';
-
-import { S3 } from '../utils/aws';
-import config from '../config';
 import { createProduct, deleteProduct, getAllProducts, updateProduct } from '../services/product';
 
 const upload = multer({ dest: '/tmp/' })
