@@ -265,6 +265,11 @@ router.put('/products/:productId', authorize(Role.ADMIN), upload.array('brandIma
             productId: req.params.productId,
         });
         
+
+        Array(req.files).forEach( file => {
+            console.log('files are',file);
+        })
+        
     const product = await updateProduct(productId, name, price, status, [''], categoryId, vendorId);
 
     res.send({
