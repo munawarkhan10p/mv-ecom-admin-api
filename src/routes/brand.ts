@@ -6,7 +6,7 @@ import { authorize } from '../middlewares/authorize';
 import { wrapAsync } from '../utils/asyncHandler';
 
 import { Request, isUserReq } from './interfaces';
-import { createBrand, deleteBrand, getAllBrands, updateBrand } from '../services/brand';
+import { createBrand, deleteBrand, findBrand, getAllBrands, updateBrand } from '../services/brand';
 import multer from 'multer';
 import fs from 'fs';
 
@@ -290,6 +290,19 @@ router.delete('/brands/:brandId', authorize(Role.ADMIN), wrapAsync(async (req: R
         .validateAsync({
             brandId: req.params.brandId,
         });
+
+    const brand = await findBrand(brandId);
+    
+    try{
+
+    const deleteObject = await  S3.deleteObject({
+         Bucket: config.s3.Images,
+         Key:  brand.logoPath
+     }).promise();
+     console.log('delete object is ', deleteObject);
+    } catch(e){
+        console.error(e);
+    }
 
     await deleteBrand(brandId);
 
