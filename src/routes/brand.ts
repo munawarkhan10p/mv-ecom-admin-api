@@ -299,7 +299,6 @@ router.delete('/brands/:brandId', authorize(Role.ADMIN), wrapAsync(async (req: R
          Bucket: config.s3.Images,
          Key:  brand.logoPath
      }).promise();
-     console.log('delete object is ', deleteObject);
     } catch(e){
         console.error(e);
     }
