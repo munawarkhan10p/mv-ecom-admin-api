@@ -1,6 +1,7 @@
 import Joi from '@hapi/joi';
 import express, { Router } from 'express';
 import { Role, Status } from '../models/enums';
+import { DeleteObjectOutput, HeadObjectOutput } from "aws-sdk/clients/s3";
 
 import { authorize } from '../middlewares/authorize';
 import { wrapAsync } from '../utils/asyncHandler';
@@ -12,6 +13,7 @@ import fs from 'fs';
 
 import { S3 } from '../utils/aws';
 import config from '../config';
+import AWS from 'aws-sdk';
 
 const upload = multer({ dest: '/tmp/' })
 
@@ -295,10 +297,9 @@ router.delete('/brands/:brandId', authorize(Role.ADMIN), wrapAsync(async (req: R
     
     try{
 
-    const deleteObject = await  S3.deleteObject({
-         Bucket: config.s3.Images,
-         Key:  brand.logoPath
-     }).promise();
+    const deleteObject = await s3Delete(config.s3.Images,brand.logoPath );
+
+     console.log('delete object is ======== ', deleteObject);
     } catch(e){
         console.error(e);
     }
@@ -307,5 +308,25 @@ router.delete('/brands/:brandId', authorize(Role.ADMIN), wrapAsync(async (req: R
 
     res.send(204);
 }));
+
+export async function s3Delete(bucketName: string, keyName: string): Promise<DeleteObjectOutput> {
+    const s3 = new AWS.S3();
+
+    return new Promise((resolve, reject) => {
+        try {
+            s3.deleteObject({ Bucket: bucketName, Key: keyName }, (err, data) => {
+                if (err != null || data == null) {
+                    reject();
+                    console.log('reject');
+                } else {
+                    resolve(data);
+                    console.log('resolve');
+                }
+            });
+        } catch {
+            reject();
+        }
+    });
+}
 
 export default router;
