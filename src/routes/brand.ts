@@ -298,8 +298,6 @@ router.delete('/brands/:brandId', authorize(Role.ADMIN), wrapAsync(async (req: R
     try{
 
     const deleteObject = await s3Delete(config.s3.Images,brand.logoPath );
-
-     console.log('delete object is ======== ', deleteObject);
     } catch(e){
         console.error(e);
     }
