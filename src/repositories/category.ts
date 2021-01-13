@@ -50,3 +50,4 @@ async remove(categoryId: string): Promise<void> {
 }
 
 export default new CategoryRepo();
+//purpose for new is to create singleton
